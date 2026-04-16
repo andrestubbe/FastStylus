@@ -95,8 +95,6 @@ public class StylusDemo {
 </dependency>
 ```
 
-FastCore is automatically included as a transitive dependency.
-
 ### Gradle (JitPack)
 
 ```groovy
@@ -110,11 +108,12 @@ dependencies {
 
 ### Direct Download
 
-- **faststylus-v1.0.0.jar** — Main library with DLL
-- **fastcore-v1.0.0.jar** — [JNI loader](https://github.com/andrestubbe/FastCore/releases)
+- [faststylus-v1.0.0.jar](https://github.com/andrestubbe/FastStylus/releases/download/v1.0.0/faststylus-v1.0.0.jar) — Main library with DLL
+- [fastcore-v1.0.0.jar](https://github.com/andrestubbe/FastCore/releases/download/v1.0.0/fastcore-1.0.0.jar) — JNI loader (required dependency)
 
 ```bash
-java -cp "faststylus-v1.0.0.jar;fastcore-v1.0.0.jar" YourApp
+# Run with both JARs
+java -cp "faststylus-v1.0.0.jar;fastcore-1.0.0.jar" YourApp
 ```
 
 ### Build from Source
