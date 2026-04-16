@@ -20,14 +20,44 @@
 #define GET_POINTERID_WPARAM(wParam) (LOWORD(wParam))
 #endif
 
-// Pointer flags for stylus features
+// Pointer flags for stylus features (only define if missing)
 #ifndef POINTER_FLAG_ERASER
 #define POINTER_FLAG_ERASER 0x00004000
+#endif
+#ifndef POINTER_FLAG_FIRSTBUTTON
 #define POINTER_FLAG_FIRSTBUTTON 0x00010000  // Barrel button 1
+#endif
+#ifndef POINTER_FLAG_SECONDBUTTON
 #define POINTER_FLAG_SECONDBUTTON 0x00020000  // Barrel button 2
+#endif
+#ifndef POINTER_FLAG_THIRDBUTTON
 #define POINTER_FLAG_THIRDBUTTON 0x00040000
+#endif
+#ifndef POINTER_FLAG_FOURTHBUTTON
 #define POINTER_FLAG_FOURTHBUTTON 0x00080000
+#endif
+#ifndef POINTER_FLAG_FIFTHBUTTON
 #define POINTER_FLAG_FIFTHBUTTON 0x00100000
+#endif
+#ifndef POINTER_FLAG_INCONTACT
+#define POINTER_FLAG_INCONTACT 0x00000004
+#endif
+#ifndef POINTER_FLAG_INRANGE
+#define POINTER_FLAG_INRANGE 0x00000002
+#endif
+
+// Pointer type constants (fallback)
+#ifndef PT_POINTER
+#define PT_POINTER 0x00000001
+#endif
+#ifndef PT_TOUCH
+#define PT_TOUCH 0x00000002
+#endif
+#ifndef PT_PEN
+#define PT_PEN 0x00000003
+#endif
+#ifndef PT_MOUSE
+#define PT_MOUSE 0x00000004
 #endif
 
 #ifndef POINTER_DEVICE_PRODUCT_ID_LEN
@@ -87,14 +117,16 @@ static bool IsStylusPointer(UINT32 pointerId) {
     
     POINTER_INFO ptrInfo;
     if (pGetPointerInfo(pointerId, &ptrInfo)) {
-        // Check pointer type
-        return (ptrInfo.pointerType == PT_PEN);
+        // Check pointer type - accept PEN, TOUCH (Bamboo Ink reports as touch), or UNKNOWN
+        // Bamboo Ink Plus reports as PT_TOUCH but has pen properties via GetPointerPenInfo
+        return (ptrInfo.pointerType == PT_PEN || ptrInfo.pointerType == PT_TOUCH || ptrInfo.pointerType == 0);
     }
     return false;
 }
 
 // Window procedure to intercept stylus events
 static LRESULT CALLBACK StylusWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    // Debug: Log all pointer messages
     switch (msg) {
         case WM_POINTERDOWN:
         case WM_POINTERUPDATE:
@@ -127,7 +159,6 @@ static LRESULT CALLBACK StylusWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
                     g_stylusPoints[slot].pressure = 0;
                     g_stylusPoints[slot].tiltX = 0;
                     g_stylusPoints[slot].tiltY = 0;
-                    fprintf(stderr, "[FastStylus] Stylus UP id=%d\n", pointerId);
                 }
                 LeaveCriticalSection(&g_stylusLock);
                 return 0;
@@ -170,10 +201,11 @@ static LRESULT CALLBACK StylusWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
                         // Rotation/Orientation (in degrees, 0-359)
                         g_stylusPoints[slot].rotation = penInfo.rotation;
                         
-                        // Contact size
-                        RECT rcContact = penInfo.pointerInfo.rcContact;
-                        g_stylusPoints[slot].width = rcContact.right - rcContact.left;
-                        g_stylusPoints[slot].height = rcContact.bottom - rcContact.top;
+                        // Contact size - estimate based on pressure (POINTER_PEN_INFO doesn't have rcContact)
+                        // Higher pressure = larger contact area
+                        int contactSize = 2 + (penInfo.pressure * 20 / 1024);  // 2-22 pixels
+                        g_stylusPoints[slot].width = contactSize;
+                        g_stylusPoints[slot].height = contactSize;
                         
                         // Button states
                         g_stylusPoints[slot].isEraser = (penInfo.pointerInfo.pointerFlags & POINTER_FLAG_ERASER) != 0;
@@ -188,18 +220,8 @@ static LRESULT CALLBACK StylusWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
                         if (inContact) {
                             if (msg == WM_POINTERDOWN) {
                                 g_stylusPoints[slot].state = 1; // DOWN
-                                fprintf(stderr, "[FastStylus] Stylus DOWN id=%d at (%d,%d) pressure=%d tilt=(%d,%d) rotation=%d eraser=%s\n", 
-                                        pointerId, pt.x, pt.y, penInfo.pressure, 
-                                        penInfo.tiltX, penInfo.tiltY, penInfo.rotation,
-                                        g_stylusPoints[slot].isEraser ? "yes" : "no");
                             } else {
                                 g_stylusPoints[slot].state = 2; // MOVE
-                                // Log MOVE every 30 frames to avoid spam
-                                static int moveCount = 0;
-                                if (++moveCount % 30 == 0) {
-                                    fprintf(stderr, "[FastStylus] Stylus MOVE id=%d at (%d,%d) pressure=%d\n", 
-                                            pointerId, pt.x, pt.y, penInfo.pressure);
-                                }
                             }
                         } else if (inRange) {
                             // Pen is near but not touching (hover)
@@ -238,8 +260,6 @@ static LRESULT CALLBACK StylusWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
                                 g_stylusPoints[j].isBarrelButton1 = (ptrInfo.pointerFlags & POINTER_FLAG_FIRSTBUTTON) != 0;
                                 g_stylusPoints[j].isBarrelButton2 = (ptrInfo.pointerFlags & POINTER_FLAG_SECONDBUTTON) != 0;
                                 g_stylusPoints[j].isInverted = g_stylusPoints[j].isEraser;
-                                
-                                fprintf(stderr, "[FastStylus] Stylus detected (fallback API) id=%d\n", pointerId);
                                 break;
                             }
                         }
@@ -295,11 +315,6 @@ JNIEXPORT void JNICALL Java_faststylus_FastStylus_initNative(JNIEnv*, jclass, jl
         // Subclass window to intercept pointer messages
         g_origWndProc = (WNDPROC)SetWindowLongPtr(g_hwnd, GWLP_WNDPROC, (LONG_PTR)StylusWndProc);
         g_initialized = true;
-        fprintf(stderr, "[FastStylus] WM_POINTER registered for window %p\n", g_hwnd);
-        fprintf(stderr, "[FastStylus] Pen API available: GetPointerPenInfo=%s\n", 
-                pGetPointerPenInfo ? "yes" : "no");
-    } else {
-        fprintf(stderr, "[FastStylus] Pen API not available (Windows 8+ required)\n");
     }
 }
 
@@ -327,7 +342,6 @@ JNIEXPORT void JNICALL Java_faststylus_FastStylus_pollNative(JNIEnv*, jclass) {
             // No update for 1 second - force UP
             g_stylusPoints[i].state = 3; // UP
             g_stylusPoints[i].active = false;
-            fprintf(stderr, "[FastStylus] Stale stylus %d auto-released\n", g_stylusPoints[i].id);
         }
     }
     LeaveCriticalSection(&g_stylusLock);

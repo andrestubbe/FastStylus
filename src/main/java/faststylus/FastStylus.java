@@ -106,10 +106,7 @@ public class FastStylus {
      * Create FastStylus for a JFrame/Window
      */
     public static FastStylus create(javax.swing.JFrame frame) {
-        System.out.println("[FastStylus] create() called");
-        
         // Wait until window is visible and title is set
-        System.out.println("[FastStylus] Waiting for frame...");
         int waitRetries = 0;
         while ((!frame.isVisible() || frame.getTitle() == null || frame.getTitle().isEmpty()) && waitRetries < 50) {
             try { Thread.sleep(10); } catch (InterruptedException e) {}
@@ -117,7 +114,6 @@ public class FastStylus {
         }
         
         String title = frame.getTitle();
-        System.out.println("[FastStylus] Frame title: '" + title + "' (length=" + (title != null ? title.length() : 0) + ")");
         
         // Try different title variants
         long hwnd = 0;
@@ -132,14 +128,10 @@ public class FastStylus {
             for (String variant : titleVariants) {
                 if (variant != null && !variant.isEmpty()) {
                     hwnd = findWindow(variant);
-                    if (hwnd != 0) {
-                        System.out.println("[FastStylus] Found with title: '" + variant + "'");
-                        break;
-                    }
+                    if (hwnd != 0) break;
                 }
             }
             if (hwnd == 0) {
-                System.out.println("[FastStylus] Retry " + (retries + 1) + "/30...");
                 try { Thread.sleep(100); } catch (InterruptedException e) {}
                 retries++;
             }
@@ -148,7 +140,6 @@ public class FastStylus {
         if (hwnd == 0) {
             throw new RuntimeException("[FastStylus] Window not found. Title was: '" + title + "'");
         }
-        System.out.println("[FastStylus] Window handle found: " + hwnd);
         
         return new FastStylus(hwnd);
     }
@@ -156,11 +147,8 @@ public class FastStylus {
     private static native long findWindow(String title);
     
     private FastStylus(long hwnd) {
-        System.out.println("[FastStylus] Constructor called with hwnd=" + hwnd);
         this.hwnd = hwnd;
-        System.out.println("[FastStylus] Calling initNative...");
         initNative(hwnd);
-        System.out.println("[FastStylus] initNative completed");
     }
     
     /**

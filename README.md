@@ -208,6 +208,30 @@ faststylus/
 - **Windows Ink** compatible pens
 - **HP, Dell, Lenovo** 2-in-1 devices with active pens
 
+### ✅ Tested Devices
+
+| Device | Pen | Pressure | Tilt | Eraser | Barrel | Status |
+|--------|-----|----------|------|--------|--------|--------|
+| Surface Pro 8 | Surface Pen | ✅ 0-1024 | ✅ ±90° | ✅ | ✅ 2 buttons | ✅ Verified |
+| Surface Pro 8 | **Wacom Bamboo Ink Plus** | ✅ 0-1024 | ✅ ±90° | ✅ | ✅ 2 buttons | ✅ **Verified Apr 2026** |
+
+> **We need your help!** If you test FastStylus with your device, please [open an issue](https://github.com/andrestubbe/FastStylus/issues) with your results and we'll add it to the compatibility list.
+
+### 🙋 Call for Volunteers
+
+FastStylus needs testing on more hardware! If you have:
+- A Windows tablet/laptop with stylus support
+- Any active pen (Wacom, Surface, HP, Dell, Lenovo, etc.)
+- 5 minutes to run the demo
+
+Please test and report:
+1. Does pressure work? (0-100% in HUD)
+2. Does tilt work? (X/Y degrees when angling pen)
+3. Does eraser work? (flip pen, HUD shows "ERASER")
+4. Do barrel buttons work? (HUD shows "BTN1/BTN2")
+
+[Submit your test results →](https://github.com/andrestubbe/FastStylus/issues/new)
+
 ---
 
 **FastStylus** — *Part of the FastJava Ecosystem*  
