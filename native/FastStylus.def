@@ -1,0 +1,23 @@
+LIBRARY faststylus
+EXPORTS
+    Java_faststylus_FastStylus_initNative
+    Java_faststylus_FastStylus_findWindow
+    Java_faststylus_FastStylus_pollNative
+    Java_faststylus_FastStylus_getStylusCount
+    Java_faststylus_FastStylus_getStylusId
+    Java_faststylus_FastStylus_getStylusX
+    Java_faststylus_FastStylus_getStylusY
+    Java_faststylus_FastStylus_getStylusPressure
+    Java_faststylus_FastStylus_getStylusTiltX
+    Java_faststylus_FastStylus_getStylusTiltY
+    Java_faststylus_FastStylus_getStylusRotation
+    Java_faststylus_FastStylus_getStylusWidth
+    Java_faststylus_FastStylus_getStylusHeight
+    Java_faststylus_FastStylus_getStylusState
+    Java_faststylus_FastStylus_getStylusTimestamp
+    Java_faststylus_FastStylus_getStylusIsEraser
+    Java_faststylus_FastStylus_getStylusIsBarrelButton1
+    Java_faststylus_FastStylus_getStylusIsBarrelButton2
+    Java_faststylus_FastStylus_getStylusIsInverted
+    Java_faststylus_FastStylus_isStylusAvailable
+    Java_faststylus_FastStylus_getMaxStylusPoints

@@ -1,0 +1,45 @@
+# Build artifacts
+build/
+target/
+out/
+*.class
+*.jar
+*.war
+*.ear
+
+# Native libraries
+*.dll
+*.so
+*.dylib
+*.lib
+*.exp
+*.pdb
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.code-workspace
+*.project
+*.classpath
+.settings/
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+hs_err_pid*
+
+# Temp files
+*.tmp
+*.bak
+*.swp
+*~
