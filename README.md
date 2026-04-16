@@ -212,7 +212,6 @@ faststylus/
 
 | Device | Pen | Pressure | Tilt | Eraser | Barrel | Status |
 |--------|-----|----------|------|--------|--------|--------|
-| Surface Pro 8 | Surface Pen | ✅ 0-1024 | ✅ ±90° | ✅ | ✅ 2 buttons | ✅ Verified |
 | Surface Pro 8 | **Wacom Bamboo Ink Plus** | ✅ 0-1024 | ✅ ±90° | ✅ | ✅ 2 buttons | ✅ **Verified Apr 2026** |
 
 > **We need your help!** If you test FastStylus with your device, please [open an issue](https://github.com/andrestubbe/FastStylus/issues) with your results and we'll add it to the compatibility list.
