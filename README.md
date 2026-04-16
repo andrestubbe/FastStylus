@@ -91,7 +91,7 @@ public class StylusDemo {
 <dependency>
     <groupId>com.github.andrestubbe</groupId>
     <artifactId>faststylus</artifactId>
-    <version>v1.0.0</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -104,7 +104,7 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 dependencies {
-    implementation 'com.github.andrestubbe:faststylus:v1.0.0'
+    implementation 'com.github.andrestubbe:faststylus:1.0.0'
 }
 ```
 
