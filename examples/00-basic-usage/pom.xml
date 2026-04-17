@@ -30,7 +30,12 @@
         <dependency>
             <groupId>com.github.andrestubbe</groupId>
             <artifactId>faststylus</artifactId>
-            <version>v1.0.0</version>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.andrestubbe</groupId>
+            <artifactId>fasttheme</artifactId>
+            <version>1.3.1</version>
         </dependency>
     </dependencies>
 

@@ -7,8 +7,36 @@ import java.util.List;
 /**
  * FastStylus - Native Stylus/Pen Input for Java
  * 
- * Captures stylus events with native Windows Pointer API via JNI.
- * Supports pressure, tilt, eraser, and hover for Surface Pro and Wacom devices.
+ * <p>Captures stylus events with native Windows Pointer API via JNI.
+ * Supports pressure, tilt, eraser, hover, and barrel buttons for Surface Pro and Wacom devices.</p>
+ * 
+ * <p><b>Compatible Devices:</b></p>
+ * <ul>
+ *   <li>Microsoft Surface Pro (all generations with pen)</li>
+ *   <li>Wacom Bamboo Ink / Ink Plus</li>
+ *   <li>Windows Ink compatible styluses</li>
+ * </ul>
+ * 
+ * <p><b>Features:</b></p>
+ * <ul>
+ *   <li>Pressure sensitivity (0-1024 raw, 0-100% processed)</li>
+ *   <li>Tilt X/Y angles (-90° to +90°)</li>
+ *   <li>Rotation/orientation (0-360°)</li>
+ *   <li>Eraser detection</li>
+ *   <li>Barrel buttons (2 buttons)</li>
+ *   <li>Hover tracking</li>
+ * </ul>
+ * 
+ * <p><b>Requirements:</b></p>
+ * <ul>
+ *   <li>Windows 8 or later</li>
+ *   <li>Java 17+</li>
+ *   <li>faststylus native library (DLL)</li>
+ * </ul>
+ * 
+ * @version 1.0.0
+ * @see StylusEvent
+ * @see StylusListener
  */
 public class FastStylus {
     
@@ -17,25 +45,48 @@ public class FastStylus {
     }
     
     /**
-     * Single stylus event - immutable data class
+     * Single stylus event - immutable data class containing all sensor data
+     * from a stylus input sample.
+     * 
+     * <p>Created by {@link FastStylus#poll()} and passed to listeners via
+     * {@link StylusListener#onStylusEvent(StylusEvent)}.</p>
+     * 
+     * <p>All fields are public final for direct access. The class is immutable
+     * - once created, values cannot change.</p>
      */
     public static final class StylusEvent {
-        public final int id;              // Pointer ID
-        public final int x;               // X coordinate
-        public final int y;               // Y coordinate  
-        public final int pressure;        // Pressure (0-1024 from Windows)
-        public final int pressurePercent; // Pressure (0-100%)
-        public final int tiltX;             // Tilt X angle (-90 to +90 degrees)
-        public final int tiltY;             // Tilt Y angle (-90 to +90 degrees)
-        public final int rotation;          // Rotation/orientation (0-360 degrees)
-        public final int width;             // Contact width in pixels
-        public final int height;            // Contact height in pixels
-        public final long timestamp;      // Timestamp in ms
-        public final State state;           // HOVER, DOWN, MOVE, UP
-        public final boolean isEraser;      // True if eraser tip
-        public final boolean isBarrelButton1; // Barrel button 1 pressed
-        public final boolean isBarrelButton2; // Barrel button 2 pressed
-        public final boolean isInverted;    // Pen inverted (eraser end)
+        /** Pointer ID - unique identifier for each stylus input point */
+        public final int id;
+        /** X coordinate in window client pixels */
+        public final int x;
+        /** Y coordinate in window client pixels */
+        public final int y;
+        /** Raw pressure value from Windows API (0-1024) */
+        public final int pressure;
+        /** Pressure converted to percentage (0-100%) */
+        public final int pressurePercent;
+        /** Tilt X angle in degrees (-90 to +90) */
+        public final int tiltX;
+        /** Tilt Y angle in degrees (-90 to +90) */
+        public final int tiltY;
+        /** Rotation/orientation in degrees (0-360) */
+        public final int rotation;
+        /** Contact width in pixels (estimated from pressure, 2-22px) */
+        public final int width;
+        /** Contact height in pixels (estimated from pressure, 2-22px) */
+        public final int height;
+        /** Timestamp in milliseconds (system tick count) */
+        public final long timestamp;
+        /** Input state: HOVER, DOWN, MOVE, or UP */
+        public final State state;
+        /** True if pen is in eraser mode */
+        public final boolean isEraser;
+        /** True if barrel button 1 is pressed */
+        public final boolean isBarrelButton1;
+        /** True if barrel button 2 is pressed */
+        public final boolean isBarrelButton2;
+        /** True if pen is inverted (eraser end down) */
+        public final boolean isInverted;
         
         public StylusEvent(int id, int x, int y, int pressure, int tiltX, int tiltY, int rotation,
                           int width, int height, long timestamp, State state,
@@ -67,9 +118,38 @@ public class FastStylus {
         }
     }
     
-    public enum State { HOVER, DOWN, MOVE, UP }
+    /**
+     * Stylus input state enumeration
+     * 
+     * <p>State transitions typically follow:</p>
+     * <pre>
+     * HOVER → DOWN → MOVE → UP → HOVER
+     *              ↺_____↵
+     * </pre>
+     * 
+     * <p><b>States:</b></p>
+     * <ul>
+     *   <li>{@code HOVER} - Pen near screen but not touching (proximity hover)</li>
+     *   <li>{@code DOWN} - Pen just touched screen (initial contact)</li>
+     *   <li>{@code MOVE} - Pen dragging on screen (continuous contact)</li>
+     *   <li>{@code UP} - Pen lifted from screen (contact ended)</li>
+     * </ul>
+     */
+    public enum State { 
+        /** Pen hovering near screen surface */ HOVER, 
+        /** Initial contact with screen */ DOWN, 
+        /** Dragging/moving while in contact */ MOVE, 
+        /** Pen lifted, contact ended */ UP 
+    }
     
-    // Native Methods
+    // ============================================================================
+    // Native Methods - Windows Pointer API (JNI)
+    // ============================================================================
+    
+    /**
+     * Native: Initialize stylus input for a window
+     * @param hwnd Native window handle
+     */
     private static native void initNative(long hwnd);
     private static native void pollNative();
     private static native int getStylusCount();
@@ -96,14 +176,44 @@ public class FastStylus {
     private final java.util.Set<Integer> firedUpEvents = new java.util.HashSet<>();
     
     /**
-     * Interface for stylus event listener
+     * Interface for receiving stylus input events
+     * 
+     * <p>Implement this interface and register via {@link #addListener(StylusListener)}
+     * to receive stylus events.</p>
+     * 
+     * <p>Example usage:</p>
+     * <pre>
+     * stylus.addListener(event -> {
+     *     if (event.state == FastStylus.State.DOWN) {
+     *         System.out.println("Pen touched at " + event.x + "," + event.y);
+     *     }
+     * });
+     * </pre>
      */
     public interface StylusListener {
+        /**
+         * Called when a stylus event occurs
+         * @param event The stylus event containing all input data
+         */
         void onStylusEvent(StylusEvent event);
     }
     
     /**
-     * Create FastStylus for a JFrame/Window
+     * Create a FastStylus instance for a Swing window
+     * 
+     * <p>Searches for the native window handle using the frame's title.
+     * Retries multiple times to handle window creation delays.</p>
+     * 
+     * <p><b>Usage:</b></p>
+     * <pre>
+     * JFrame frame = new JFrame("My App");
+     * frame.setVisible(true);
+     * FastStylus stylus = FastStylus.create(frame);
+     * </pre>
+     * 
+     * @param frame The JFrame to capture stylus input for
+     * @return New FastStylus instance connected to the window
+     * @throws RuntimeException if window handle cannot be found
      */
     public static FastStylus create(javax.swing.JFrame frame) {
         // Wait until window is visible and title is set
@@ -152,21 +262,31 @@ public class FastStylus {
     }
     
     /**
-     * Add a stylus listener
+     * Add a listener to receive stylus events
+     * 
+     * @param listener The listener to add
+     * @see StylusListener
      */
     public void addListener(StylusListener listener) {
         listeners.add(listener);
     }
     
     /**
-     * Remove a stylus listener
+     * Remove a previously added listener
+     * 
+     * @param listener The listener to remove
      */
     public void removeListener(StylusListener listener) {
         listeners.remove(listener);
     }
     
     /**
-     * Start the stylus polling thread
+     * Start the stylus polling thread (~120Hz)
+     * 
+     * <p>Creates a background daemon thread that polls native stylus state
+     * and dispatches events to all registered listeners.</p>
+     * 
+     * <p>No-op if already running.</p>
      */
     public void start() {
         if (running) return;
@@ -188,13 +308,19 @@ public class FastStylus {
     
     /**
      * Stop the stylus polling thread
+     * 
+     * <p>Signals the polling thread to stop. May take up to ~8ms to complete.</p>
      */
     public void stop() {
         running = false;
     }
     
     /**
-     * Single poll (blocking)
+     * Poll for stylus events once (blocking)
+     * 
+     * <p>Processes native messages and dispatches events to listeners.
+     * Called automatically by the polling thread, but can be called manually
+     * for synchronous processing.</p>
      */
     public void poll() {
         pollNative();
@@ -248,12 +374,16 @@ public class FastStylus {
     }
     
     /**
-     * Check if stylus/pen is available
+     * Check if stylus/pen hardware is available
+     * 
+     * @return true if Pointer API is available (Windows 8+), false otherwise
      */
     public static native boolean isStylusAvailable();
     
     /**
-     * Get maximum supported stylus inputs
+     * Get maximum supported concurrent stylus inputs
+     * 
+     * @return Maximum number of stylus points (typically 10)
      */
     public static native int getMaxStylusPoints();
 }

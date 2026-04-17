@@ -279,10 +279,10 @@ public class StylusDemo {
         
         // Tilt visualization
         g.drawString("Tilt X:", pad + 10, pad + 85);
-        g.drawString(currentTiltX + "Â°", pad + 100, pad + 85);
+        g.drawString(currentTiltX + "-¦", pad + 100, pad + 85);
         
         g.drawString("Tilt Y:", pad + 160, pad + 85);
-        g.drawString(currentTiltY + "Â°", pad + 250, pad + 85);
+        g.drawString(currentTiltY + "-¦", pad + 250, pad + 85);
         
         // Tilt circle visualization
         int cx = pad + 200;

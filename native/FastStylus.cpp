@@ -1,7 +1,24 @@
 /**
- * FastStylus - Native Stylus/Pen Input for Java
- * Windows API Implementation (WM_POINTER - Windows 10/11)
- * Supports Surface Pro 8, Wacom, and Windows Ink devices
+ * @file FastStylus.cpp
+ * @brief Native Windows Stylus/Pen Input Implementation for Java
+ * 
+ * FastStylus provides low-level stylus input detection using Windows Pointer APIs
+ * (WM_POINTER messages). Supports pressure, tilt, rotation, eraser, and barrel buttons.
+ * 
+ * @version 1.0.0
+ * @date 2026
+ * 
+ * Compatible Devices:
+ * - Microsoft Surface Pro (all generations with pen)
+ * - Wacom Bamboo Ink / Ink Plus
+ * - Windows Ink compatible styluses
+ * 
+ * Windows APIs Used:
+ * - WM_POINTER (Windows 8+)
+ * - GetPointerPenInfo (Windows 8+)
+ * - GetPointerInfo (Windows 8+)
+ * 
+ * @note Requires Windows 8 or later. Windows 7 and earlier not supported.
  */
 
 #include <jni.h>
@@ -10,7 +27,9 @@
 
 #pragma comment(lib, "user32.lib")
 
-// WM_POINTER constants (Windows 8+)
+/// @name WM_POINTER Message Constants
+/// Windows Pointer API message IDs (Windows 8+)
+/// @{
 #ifndef WM_POINTERDOWN
 #define WM_POINTERDOWN 0x0246
 #define WM_POINTERUP 0x0247
@@ -19,8 +38,11 @@
 #define WM_POINTERLEAVE 0x024A
 #define GET_POINTERID_WPARAM(wParam) (LOWORD(wParam))
 #endif
+/// @}
 
-// Pointer flags for stylus features (only define if missing)
+/// @name Pointer Feature Flags
+/// Bitmasks for pointer capabilities and button states
+/// @{
 #ifndef POINTER_FLAG_ERASER
 #define POINTER_FLAG_ERASER 0x00004000
 #endif
@@ -45,8 +67,11 @@
 #ifndef POINTER_FLAG_INRANGE
 #define POINTER_FLAG_INRANGE 0x00000002
 #endif
+/// @}
 
-// Pointer type constants (fallback)
+/// @name Pointer Type Constants
+/// Enumeration of pointer device types
+/// @{
 #ifndef PT_POINTER
 #define PT_POINTER 0x00000001
 #endif
@@ -59,32 +84,88 @@
 #ifndef PT_MOUSE
 #define PT_MOUSE 0x00000004
 #endif
+/// @}
 
-#ifndef POINTER_DEVICE_PRODUCT_ID_LEN
+/// @name Device Information Constants
+/// @{
 #define POINTER_DEVICE_PRODUCT_ID_LEN 0x00000014
 #endif
+/// @}
 
-// Function pointers for Pointer API
+/// @name Pointer API Function Types
+/// Dynamic function pointers for Windows Pointer API (loaded at runtime)
+/// Allows compatibility with older Windows versions
+/// @{
+/// @brief Get detailed touch information for a pointer
+/// @param pointerId The unique ID of the pointer
+/// @param touchInfo Pointer to receive the touch information
+/// @return TRUE if successful, FALSE otherwise
+
+/// @brief Get detailed pen/stylus information for a pointer
+/// @param pointerId The unique ID of the pointer  
+/// @param penInfo Pointer to receive the pen information including pressure, tilt
+/// @return TRUE if successful, FALSE otherwise
+
+/// @brief Get basic pointer information
+/// @param pointerId The unique ID of the pointer
+/// @param pointerInfo Pointer to receive basic pointer info (position, flags)
+/// @return TRUE if successful, FALSE otherwise
+
+/// @brief Get pen info for multiple pointers in a frame
+/// @param pointerId First pointer ID in the frame
+/// @param pointerCount Receives/sets the count of pointers
+/// @param penInfo Array to receive pen information
+/// @return TRUE if successful, FALSE otherwise
+
+/// @brief Enable/disable mouse events from pointer input
+/// @param fEnable TRUE to enable mouse-in-pointer, FALSE to disable
+/// @return TRUE if successful, FALSE otherwise
 typedef BOOL (WINAPI *GetPointerTouchInfoFunc)(UINT32 pointerId, POINTER_TOUCH_INFO* touchInfo);
 typedef BOOL (WINAPI *GetPointerPenInfoFunc)(UINT32 pointerId, POINTER_PEN_INFO* penInfo);
 typedef BOOL (WINAPI *GetPointerInfoFunc)(UINT32 pointerId, POINTER_INFO* pointerInfo);
 typedef BOOL (WINAPI *GetPointerFramePenInfoFunc)(UINT32 pointerId, UINT32* pointerCount, POINTER_PEN_INFO* penInfo);
 typedef BOOL (WINAPI *EnableMouseInPointerFunc)(BOOL fEnable);
+/// @}
 
+/// @name Pointer API Function Pointers
+/// Dynamically loaded Windows API functions. nullptr if not available.
+/// @{
 static GetPointerTouchInfoFunc pGetPointerTouchInfo = nullptr;
 static GetPointerPenInfoFunc pGetPointerPenInfo = nullptr;
 static GetPointerInfoFunc pGetPointerInfo = nullptr;
 static GetPointerFramePenInfoFunc pGetPointerFramePenInfo = nullptr;
 static EnableMouseInPointerFunc pEnableMouseInPointer = nullptr;
+/// @}
 
-// Global state
+/// @name Global State Variables
+/// Application-wide state for stylus tracking
+/// @{
+
+/// @brief Target window handle for stylus input hooking
 static HWND g_hwnd = nullptr;
+
+/// @brief True if Pointer API has been initialized successfully
 static bool g_initialized = false;
+
+/// @brief True if stylus/pen hardware is detected on system
 static bool g_stylusAvailable = false;
 
-// Stylus point storage (ring buffer)
+/// @}
+
+/// @name Stylus Data Structures
+/// @{
+
+/// @brief Maximum number of concurrent stylus points to track
+/// @note Windows theoretically supports 256, but stylus devices typically use 1
 #define MAX_STYLUS_POINTS 10
 
+/**
+ * @struct StylusPoint
+ * @brief Represents a single stylus input sample with all sensor data
+ * 
+ * Stores complete state for one stylus point including position, pressure,
+ * tilt angles, rotation, and button states.
+ */
 struct StylusPoint {
     int id;
     int x;
@@ -101,17 +182,42 @@ struct StylusPoint {
     bool isEraser;
     bool isBarrelButton1;
     bool isBarrelButton2;
-    bool isInverted;
+    bool isInverted;        ///< True if pen is inverted (eraser end)
 };
 
+/// @brief Ring buffer of stylus point data
 static StylusPoint g_stylusPoints[MAX_STYLUS_POINTS];
+
+/// @brief Current count of active stylus points
 static int g_stylusCount = 0;
+
+/// @brief Thread-safe lock for accessing stylus data
 static CRITICAL_SECTION g_stylusLock;
 
-// Window procedure hook
+/// @}
+
+/// @name Window Procedure Hooking
+/// @{
+
+/// @brief Original window procedure before subclassing
 static WNDPROC g_origWndProc = nullptr;
 
-// Helper: Check if a pointer is a stylus/pen (not touch or mouse)
+/// @}
+
+/// @name Helper Functions
+/// @{
+
+/**
+ * @brief Determines if a pointer is a stylus/pen device
+ * 
+ * Checks the pointer type via GetPointerInfo. Accepts PEN, TOUCH (some Bamboo
+ * Ink devices report as touch), or UNKNOWN pointer types.
+ * 
+ * @param pointerId The Windows pointer ID to check
+ * @return true if the pointer is a stylus/pen, false otherwise
+ * 
+ * @note Bamboo Ink Plus reports as PT_TOUCH but has pen properties via GetPointerPenInfo
+ */
 static bool IsStylusPointer(UINT32 pointerId) {
     if (!pGetPointerInfo) return false;
     
@@ -124,7 +230,27 @@ static bool IsStylusPointer(UINT32 pointerId) {
     return false;
 }
 
-// Window procedure to intercept stylus events
+/// @}
+
+/// @name Window Procedure Hooking
+/// @{
+
+/**
+ * @brief Window procedure hook that intercepts stylus pointer messages
+ * 
+ * Subclassed onto the target window to capture WM_POINTER* messages before
+ * they reach the default window procedure. Extracts all stylus data including
+ * pressure, tilt, rotation, and button states.
+ * 
+ * @param hwnd Window handle receiving the message
+ * @param msg Windows message identifier (WM_POINTER*, etc.)
+ * @param wParam Message-specific parameter (contains pointer ID)
+ * @param lParam Message-specific parameter (contains coordinate data)
+ * @return LRESULT 0 if message consumed, otherwise passed to original WndProc
+ * 
+ * @note This procedure runs on the UI thread. Uses critical sections for thread safety.
+ * @see https://docs.microsoft.com/en-us/windows/win32/inputmsg/wm-pointerdown
+ */
 static LRESULT CALLBACK StylusWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     // Debug: Log all pointer messages
     switch (msg) {
@@ -280,14 +406,34 @@ static LRESULT CALLBACK StylusWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
         }
     }
     
+    // Pass non-pointer messages to original window procedure
     if (g_origWndProc) {
         return CallWindowProc(g_origWndProc, hwnd, msg, wParam, lParam);
     }
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
+/// @}
+
+/// @name JNI Functions
+/// JNI exports for Java faststylus.FastStylus class
+/// @{
+
 extern "C" {
 
+/**
+ * @brief JNI: Initialize native stylus input for a window
+ * 
+ * Loads Windows Pointer API functions, checks for stylus availability,
+ * and subclasses the target window to intercept pointer messages.
+ * 
+ * @param env JNI environment pointer (unused)
+ * @param clazz Java class reference (unused)
+ * @param hwnd Native window handle (HWND) as jlong
+ * 
+ * @note Must be called before any other stylus functions
+ * @note Enables mouse-in-pointer mode for compatibility
+ */
 JNIEXPORT void JNICALL Java_faststylus_FastStylus_initNative(JNIEnv*, jclass, jlong hwnd) {
     g_hwnd = (HWND)hwnd;
     
@@ -318,6 +464,15 @@ JNIEXPORT void JNICALL Java_faststylus_FastStylus_initNative(JNIEnv*, jclass, jl
     }
 }
 
+/**
+ * @brief JNI: Find a window by its title
+ * 
+ * Wrapper for Windows FindWindow API.
+ * 
+ * @param env JNI environment
+ * @param title Window title to search for
+ * @return jlong Window handle (HWND), or 0 if not found
+ */
 JNIEXPORT jlong JNICALL Java_faststylus_FastStylus_findWindow(JNIEnv* env, jclass, jstring title) {
     const char* str = nullptr;
     if (title) str = env->GetStringUTFChars(title, nullptr);
@@ -326,6 +481,15 @@ JNIEXPORT jlong JNICALL Java_faststylus_FastStylus_findWindow(JNIEnv* env, jclas
     return (jlong)hwnd;
 }
 
+/**
+ * @brief JNI: Process pending window messages and detect stale inputs
+ * 
+ * Must be called regularly (e.g., from a polling thread) to:
+ * 1. Process WM_POINTER messages via PeekMessage/DispatchMessage
+ * 2. Detect stylus timeouts (>1000ms without update = automatic UP)
+ * 
+ * @note Runs message pump - call from dedicated thread, not UI thread
+ */
 JNIEXPORT void JNICALL Java_faststylus_FastStylus_pollNative(JNIEnv*, jclass) {
     // Process window messages
     MSG msg;
@@ -347,6 +511,10 @@ JNIEXPORT void JNICALL Java_faststylus_FastStylus_pollNative(JNIEnv*, jclass) {
     LeaveCriticalSection(&g_stylusLock);
 }
 
+/**
+ * @brief JNI: Get count of active stylus points
+ * @return jint Number of active stylus points (0 to MAX_STYLUS_POINTS)
+ */
 JNIEXPORT jint JNICALL Java_faststylus_FastStylus_getStylusCount(JNIEnv*, jclass) {
     EnterCriticalSection(&g_stylusLock);
     int count = g_stylusCount;
@@ -354,89 +522,179 @@ JNIEXPORT jint JNICALL Java_faststylus_FastStylus_getStylusCount(JNIEnv*, jclass
     return count;
 }
 
+/**
+ * @brief JNI: Get stylus ID for a given index
+ * @param index Stylus point index (0 to MAX_STYLUS_POINTS-1)
+ * @return jint Stylus ID, or -1 if index invalid
+ */
 JNIEXPORT jint JNICALL Java_faststylus_FastStylus_getStylusId(JNIEnv*, jclass, jint index) {
     if (index < 0 || index >= MAX_STYLUS_POINTS) return -1;
     return g_stylusPoints[index].id;
 }
 
+/**
+ * @brief JNI: Get X coordinate
+ * @param index Stylus point index
+ * @return jint X position in pixels (window client coordinates), or 0 if invalid
+ */
 JNIEXPORT jint JNICALL Java_faststylus_FastStylus_getStylusX(JNIEnv*, jclass, jint index) {
     if (index < 0 || index >= MAX_STYLUS_POINTS) return 0;
     return g_stylusPoints[index].x;
 }
 
+/**
+ * @brief JNI: Get Y coordinate
+ * @param index Stylus point index
+ * @return jint Y position in pixels (window client coordinates), or 0 if invalid
+ */
 JNIEXPORT jint JNICALL Java_faststylus_FastStylus_getStylusY(JNIEnv*, jclass, jint index) {
     if (index < 0 || index >= MAX_STYLUS_POINTS) return 0;
     return g_stylusPoints[index].y;
 }
 
+/**
+ * @brief JNI: Get pressure value
+ * @param index Stylus point index
+ * @return jint Pressure (0-1024, Windows raw value), or 0 if invalid
+ */
 JNIEXPORT jint JNICALL Java_faststylus_FastStylus_getStylusPressure(JNIEnv*, jclass, jint index) {
     if (index < 0 || index >= MAX_STYLUS_POINTS) return 0;
     return g_stylusPoints[index].pressure;
 }
 
+/**
+ * @brief JNI: Get X-axis tilt
+ * @param index Stylus point index
+ * @return jint Tilt X in degrees (-90 to +90), or 0 if invalid
+ */
 JNIEXPORT jint JNICALL Java_faststylus_FastStylus_getStylusTiltX(JNIEnv*, jclass, jint index) {
     if (index < 0 || index >= MAX_STYLUS_POINTS) return 0;
     return g_stylusPoints[index].tiltX;
 }
 
+/**
+ * @brief JNI: Get Y-axis tilt
+ * @param index Stylus point index
+ * @return jint Tilt Y in degrees (-90 to +90), or 0 if invalid
+ */
 JNIEXPORT jint JNICALL Java_faststylus_FastStylus_getStylusTiltY(JNIEnv*, jclass, jint index) {
     if (index < 0 || index >= MAX_STYLUS_POINTS) return 0;
     return g_stylusPoints[index].tiltY;
 }
 
+/**
+ * @brief JNI: Get pen rotation
+ * @param index Stylus point index
+ * @return jint Rotation in degrees (0-359), or 0 if invalid
+ */
 JNIEXPORT jint JNICALL Java_faststylus_FastStylus_getStylusRotation(JNIEnv*, jclass, jint index) {
     if (index < 0 || index >= MAX_STYLUS_POINTS) return 0;
     return g_stylusPoints[index].rotation;
 }
 
+/**
+ * @brief JNI: Get contact width
+ * @param index Stylus point index
+ * @return jint Contact width in pixels, or 0 if invalid
+ * @note Estimated from pressure (2-22px range)
+ */
 JNIEXPORT jint JNICALL Java_faststylus_FastStylus_getStylusWidth(JNIEnv*, jclass, jint index) {
     if (index < 0 || index >= MAX_STYLUS_POINTS) return 0;
     return g_stylusPoints[index].width;
 }
 
+/**
+ * @brief JNI: Get contact height
+ * @param index Stylus point index
+ * @return jint Contact height in pixels, or 0 if invalid
+ * @note Estimated from pressure (2-22px range)
+ */
 JNIEXPORT jint JNICALL Java_faststylus_FastStylus_getStylusHeight(JNIEnv*, jclass, jint index) {
     if (index < 0 || index >= MAX_STYLUS_POINTS) return 0;
     return g_stylusPoints[index].height;
 }
 
+/**
+ * @brief JNI: Get stylus state
+ * @param index Stylus point index
+ * @return jint State: 0=HOVER, 1=DOWN, 2=MOVE, 3=UP
+ */
 JNIEXPORT jint JNICALL Java_faststylus_FastStylus_getStylusState(JNIEnv*, jclass, jint index) {
     if (index < 0 || index >= MAX_STYLUS_POINTS) return 3; // UP
     return g_stylusPoints[index].state;
 }
 
+/**
+ * @brief JNI: Get timestamp of last update
+ * @param index Stylus point index
+ * @return jlong Tick count (GetTickCount), or 0 if invalid
+ */
 JNIEXPORT jlong JNICALL Java_faststylus_FastStylus_getStylusTimestamp(JNIEnv*, jclass, jint index) {
     if (index < 0 || index >= MAX_STYLUS_POINTS) return 0;
     return g_stylusPoints[index].timestamp;
 }
 
+/**
+ * @brief JNI: Check if pen is in eraser mode
+ * @param index Stylus point index
+ * @return jboolean JNI_TRUE if using eraser end, JNI_FALSE otherwise
+ */
 JNIEXPORT jboolean JNICALL Java_faststylus_FastStylus_getStylusIsEraser(JNIEnv*, jclass, jint index) {
     if (index < 0 || index >= MAX_STYLUS_POINTS) return JNI_FALSE;
     return g_stylusPoints[index].isEraser ? JNI_TRUE : JNI_FALSE;
 }
 
+/**
+ * @brief JNI: Check barrel button 1 state
+ * @param index Stylus point index
+ * @return jboolean JNI_TRUE if pressed, JNI_FALSE otherwise
+ */
 JNIEXPORT jboolean JNICALL Java_faststylus_FastStylus_getStylusIsBarrelButton1(JNIEnv*, jclass, jint index) {
     if (index < 0 || index >= MAX_STYLUS_POINTS) return JNI_FALSE;
     return g_stylusPoints[index].isBarrelButton1 ? JNI_TRUE : JNI_FALSE;
 }
 
+/**
+ * @brief JNI: Check barrel button 2 state
+ * @param index Stylus point index
+ * @return jboolean JNI_TRUE if pressed, JNI_FALSE otherwise
+ */
 JNIEXPORT jboolean JNICALL Java_faststylus_FastStylus_getStylusIsBarrelButton2(JNIEnv*, jclass, jint index) {
     if (index < 0 || index >= MAX_STYLUS_POINTS) return JNI_FALSE;
     return g_stylusPoints[index].isBarrelButton2 ? JNI_TRUE : JNI_FALSE;
 }
 
+/**
+ * @brief JNI: Check if pen is inverted (eraser end down)
+ * @param index Stylus point index
+ * @return jboolean JNI_TRUE if inverted, JNI_FALSE otherwise
+ * @note Same as isEraser for most pens
+ */
 JNIEXPORT jboolean JNICALL Java_faststylus_FastStylus_getStylusIsInverted(JNIEnv*, jclass, jint index) {
     if (index < 0 || index >= MAX_STYLUS_POINTS) return JNI_FALSE;
     return g_stylusPoints[index].isInverted ? JNI_TRUE : JNI_FALSE;
 }
 
+/**
+ * @brief JNI: Check if stylus/pen hardware is available
+ * @return jboolean JNI_TRUE if Pointer API available and pen detected
+ * @note Also returns TRUE if Pointer API functions are available, even if no pen currently active
+ */
 JNIEXPORT jboolean JNICALL Java_faststylus_FastStylus_isStylusAvailable(JNIEnv*, jclass) {
     return g_stylusAvailable ? JNI_TRUE : JNI_FALSE;
 }
 
+/**
+ * @brief JNI: Get maximum supported stylus points
+ * @return jint Maximum number of concurrent stylus points (MAX_STYLUS_POINTS)
+ * @note Windows supports 256 theoretically, stylus devices typically 1
+ */
 JNIEXPORT jint JNICALL Java_faststylus_FastStylus_getMaxStylusPoints(JNIEnv*, jclass) {
-    // Windows supports up to 256 pointer inputs theoretically
-    // Stylus devices typically support 1 pen at a time
     return MAX_STYLUS_POINTS;
 }
 
+/// @}
+
 } // extern "C"
+
+/// @}
