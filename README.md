@@ -116,10 +116,6 @@ dependencies {
 java -cp "faststylus-v1.0.0.jar;fastcore-1.0.0.jar" YourApp
 ```
 
-### Build from Source
-
-See [COMPILE.md](COMPILE.md) for detailed build instructions.
-
 ---
 
 ## 🎯 API Reference
@@ -156,20 +152,9 @@ See [COMPILE.md](COMPILE.md) for detailed build instructions.
 
 ---
 
-## 🏗️ Build from Source
+## Build from Source
 
-### Prerequisites
-- Windows 10/11 with Stylus/Tablet support
-- Java JDK 17+
-- Visual Studio 2022 (C++ workload)
-
-### Build
-```batch
-compile.bat
-mvn clean package
-```
-
-See [COMPILE.md](COMPILE.md) for detailed instructions.
+See [COMPILE.md](COMPILE.md) for detailed build instructions.
 
 ---
 
@@ -193,7 +178,6 @@ faststylus/
 ├── src/main/java/faststylus/  # Library source
 │   └── FastStylus.java
 ├── compile.bat                # Native build script
-├── COMPILE.md                 # Build instructions
 ├── pom.xml                    # Maven config
 └── README.md                  # This file
 ```
