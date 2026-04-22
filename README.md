@@ -1,4 +1,4 @@
-# FastStylus — Native Stylus/Pen Input for Java [alpha]
+# FastStylus — Native Stylus/Pen Input for Java  [ALPHA]
 
 **⚡ Ultra-fast native stylus input for Java — Pressure, tilt, eraser, and hover impossible in pure Java**
 
