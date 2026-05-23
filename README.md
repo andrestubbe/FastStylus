@@ -1,5 +1,4 @@
-# FastStylus — Native Stylus/Pen Input for Java [alpha]
-
+# FastStylus — Native Stylus/Pen Input for Java  [ALPHA] - v0.1.0
 **⚡ Ultra-fast native stylus input for Java — Pressure, tilt, eraser, and hover impossible in pure Java**
 
 [![Release](https://img.shields.io/badge/release-v1.0.0-blue.svg)]()
@@ -112,7 +111,7 @@ dependencies {
 - [fastcore-v1.0.0.jar](https://github.com/andrestubbe/FastCore/releases/download/v1.0.0/fastcore-1.0.0.jar) — JNI loader (required dependency)
 
 ```bash
-# Run with both JARs
+# Run with both JARs [ALPHA] - v0.1.0
 java -cp "faststylus-v1.0.0.jar;fastcore-1.0.0.jar" YourApp
 ```
 
@@ -220,3 +219,4 @@ Please test and report:
 - [FastCore](https://github.com/andrestubbe/FastCore) — JNI loader
 - [FastTouch](https://github.com/andrestubbe/FastTouch) — Touch input
 - More at [github.com/andrestubbe](https://github.com/andrestubbe)
+
