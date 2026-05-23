@@ -1,12 +1,6 @@
 ﻿# FastStylus — Native Stylus/Pen Input for Java  [ALPHA] - v0.1.0
 **⚡ Ultra-fast native stylus input for Java — Pressure, tilt, eraser, and hover impossible in pure Java**
 
-[![Release](https://img.shields.io/badge/release-v1.0.0-blue.svg)]()
-[![JitPack](https://img.shields.io/badge/JitPack-available-brightgreen.svg)](https://jitpack.io/#andrestubbe/FastStylus)
-[![Java](https://img.shields.io/badge/Java-17+-blue.svg)](https://www.java.com)
-[![Platform](https://img.shields.io/badge/Platform-Windows%2010+-lightgrey.svg)]()
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
 > **Native stylus/pen input** via Windows WM_POINTER API. Powered by FastCore.
 
 FastStylus provides **hardware-level stylus access** for Java applications — something impossible with standard AWT/Swing. Get raw pen data including:
@@ -20,6 +14,12 @@ FastStylus provides **hardware-level stylus access** for Java applications — s
 - **Low latency** — Native Windows API, no JVM event queue delays
 
 **Java CANNOT do this.** AWT only provides mouse emulation for pen input. FastStylus gives you the real thing — perfect for Surface Pro, Wacom, and other Windows Ink devices.
+
+[![Status](https://img.shields.io/badge/status-v0.1.0-brightgreen.svg)](https://github.com/andrestubbe/FastStylus/releases/tag/v0.1.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Java](https://img.shields.io/badge/Java-17+-blue.svg)](https://www.java.com)
+[![Platform](https://img.shields.io/badge/Platform-Windows%2010+-lightgrey.svg)]()
+[![JitPack](https://img.shields.io/badge/JitPack-ready-green.svg)](https://jitpack.io/#andrestubbe)
 
 ---
 
