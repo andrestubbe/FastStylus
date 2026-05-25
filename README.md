@@ -96,12 +96,19 @@ public class Example {
         <url>https://jitpack.io</url>
     </repository>
 </repositories>
+<dependencies>
+  <dependency>
+    <groupId>com.github.andrestubbe</groupId>
+    <artifactId>faststylus</artifactId>
+    <version>v0.1.0</version>
+  </dependency>
+  <dependency>
+    <groupId>com.github.andrestubbe</groupId>
+    <artifactId>fastcore</artifactId>
+    <version>v0.1.0</version>
+  </dependency>
+</dependencies>
 
-<dependency>
-<groupId>com.github.andrestubbe</groupId>
-<artifactId>faststylus</artifactId>
-<version>1.0.0</version>
-</dependency>
 ```
 
 ### Gradle (JitPack)
@@ -112,6 +119,8 @@ repositories {
 }
 dependencies {
     implementation 'com.github.andrestubbe:faststylus:1.0.0'
+    implementation 'com.github.andrestubbe:fastcore:v0.1.0'
+
 }
 ```
 
@@ -122,11 +131,6 @@ dependencies {
 - [fastcore-v1.0.0.jar](https://github.com/andrestubbe/FastCore/releases/download/v1.0.0/fastcore-1.0.0.jar) — JNI
   loader (required dependency)
 
-```bash
-# Run with both JARs
- [ALPHA] - v0.1.0
-java -cp "faststylus-v1.0.0.jar;fastcore-1.0.0.jar" YourApp
-```
 
 ---
 
