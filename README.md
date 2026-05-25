@@ -6,9 +6,7 @@
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010+-lightgrey.svg)]()
 [![JitPack](https://img.shields.io/badge/JitPack-ready-green.svg)](https://jitpack.io/#andrestubbe)
 
-**⚡ Ultra-fast native stylus input for Java — Pressure, tilt, eraser, and hover impossible in pure Java**
-
-> **Native stylus/pen input** via Windows WM_POINTER API. Powered by FastCore.
+**⚡ Ultra-fast native stylus input for Java — Pressure, tilt, eraser, and hover impossible in pure Java. Native stylus/pen input via Windows WM_POINTER API**.
 
 FastStylus provides **hardware-level stylus access** for Java applications — something impossible with standard
 AWT/Swing. Get raw pen data including:
