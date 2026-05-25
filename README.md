@@ -241,10 +241,12 @@ MIT License — See [LICENSE](LICENSE) file for details.
 ---
 
 ## Related Projects
-
-- [FastCore](https://github.com/andrestubbe/FastCore) — Native Library Loader for Java
-- [FastKeyboard](https://github.com/andrestubbe/FastKeyboard) — High-performance RawInput engine
-- [FastTheme](https://github.com/andrestubbe/FastTheme) — Advanced UI styling engine
+- [FastCore](https://github.com/andrestubbe/FastCore) — Native Library Loader & JNI Utilities for Java
+- [FastMouse](https://github.com/andrestubbe/FastMouse) — High-Performance Native Mouse API for Java
+- [FastHotkey](https://github.com/andrestubbe/FastHotkey) — Low-Latency Global Hotkey API for Java
+- [FastKeyboard](https://github.com/andrestubbe/FastKeyboard) — Native Windows RawInput API for Java
+- [FastKeylogger](https://github.com/andrestubbe/FastKeylogger) — Behavioral Typing Logic for Java
+- [FastTouch](https://github.com/andrestubbe/FastTouch) — Native touchscreen input for Java
 
 ---
 **Part of the FastJava Ecosystem** — *Making the JVM faster.*
