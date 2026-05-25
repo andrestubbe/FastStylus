@@ -10,7 +10,8 @@
 
 > **Native stylus/pen input** via Windows WM_POINTER API. Powered by FastCore.
 
-FastStylus provides **hardware-level stylus access** for Java applications — something impossible with standard AWT/Swing. Get raw pen data including:
+FastStylus provides **hardware-level stylus access** for Java applications — something impossible with standard
+AWT/Swing. Get raw pen data including:
 
 - **Pressure sensitivity** — 0-1024 levels (0-100% mapped)
 - **Tilt X/Y** — Pen angle in degrees (-90° to +90°)
@@ -20,28 +21,21 @@ FastStylus provides **hardware-level stylus access** for Java applications — s
 - **Hover** — Proximity detection without contact
 - **Low latency** — Native Windows API, no JVM event queue delays
 
-**Java CANNOT do this.** AWT only provides mouse emulation for pen input. FastStylus gives you the real thing — perfect for Surface Pro, Wacom, and other Windows Ink devices.
+**Java CANNOT do this.** AWT only provides mouse emulation for pen input. FastStylus gives you the real thing — perfect
+for Surface Pro, Wacom, and other Windows Ink devices.
 
 [![FastKeyboard Showcase](docs/screenshot.png)](https://www.youtube.com/watch?v=BZsqQl7WqWk)
 
 ---
 
-## 📦 Why FastStylus?
+## Table of Contents
 
-| Feature | Java AWT/Swing | FastStylus (JNI) |
-|---------|---------------|-----------------|
-| Pressure | ❌ No | ✅ 0-1024 levels (0-100%) |
-| Tilt X/Y | ❌ No | ✅ -90° to +90° |
-| Rotation | ❌ No | ✅ 0-360° |
-| Eraser Detection | ❌ No | ✅ Automatic |
-| Barrel Buttons | ❌ No | ✅ 2 buttons |
-| Hover | ❌ No | ✅ Proximity detection |
-| Raw Pen Events | ❌ No (synthesized mouse) | ✅ Native WM_POINTER |
-| Latency | High (event queue) | **Native speed** |
+- [TODO](#features)
 
 ---
 
-## 🚀 Quick Start
+
+## Quick Start
 
 ```java
 import faststylus.FastStylus;
@@ -49,40 +43,55 @@ import faststylus.FastStylus.StylusEvent;
 
 import javax.swing.JFrame;
 
-public class StylusDemo {
+public class Example {
     public static void main(String[] args) {
-        JFrame frame = new JFrame("FastStylus Demo");
+        JFrame frame = new JFrame("Example");
         frame.setSize(800, 600);
         frame.setVisible(true);
-        
+
         // Initialize native stylus input
         FastStylus stylus = FastStylus.create(frame);
-        
+
         // Add stylus listener
         stylus.addListener(event -> {
-            System.out.println("Stylus " + event.id + 
-                " at (" + event.x + "," + event.y + ")" +
-                " pressure=" + event.pressurePercent + "%" +
-                " tilt=(" + event.tiltX + "," + event.tiltY + ")" +
-                " eraser=" + event.isEraser +
-                " state=" + event.state);
+            System.out.println("Stylus " + event.id +
+                    " at (" + event.x + "," + event.y + ")" +
+                    " pressure=" + event.pressurePercent + "%" +
+                    " tilt=(" + event.tiltX + "," + event.tiltY + ")" +
+                    " eraser=" + event.isEraser +
+                    " state=" + event.state);
         });
-        
+
         // Start polling
         stylus.start();
-        
-        // Your app runs here...
     }
 }
 ```
 
 ---
 
-## 📦 Installation
+## Why FastStylus?
+
+| Feature          | Java AWT/Swing           | FastStylus (JNI)         |
+|------------------|--------------------------|--------------------------|
+| Pressure         | ❌ No                     | ✅ 0-1024 levels (0-100%) |
+| Tilt X/Y         | ❌ No                     | ✅ -90° to +90°           |
+| Rotation         | ❌ No                     | ✅ 0-360°                 |
+| Eraser Detection | ❌ No                     | ✅ Automatic              |
+| Barrel Buttons   | ❌ No                     | ✅ 2 buttons              |
+| Hover            | ❌ No                     | ✅ Proximity detection    |
+| Raw Pen Events   | ❌ No (synthesized mouse) | ✅ Native WM_POINTER      |
+| Latency          | High (event queue)       | **Native speed**         |
+
+---
+
+
+## Installation
 
 ### Maven (JitPack)
 
 ```xml
+
 <repositories>
     <repository>
         <id>jitpack.io</id>
@@ -91,9 +100,9 @@ public class StylusDemo {
 </repositories>
 
 <dependency>
-    <groupId>com.github.andrestubbe</groupId>
-    <artifactId>faststylus</artifactId>
-    <version>1.0.0</version>
+<groupId>com.github.andrestubbe</groupId>
+<artifactId>faststylus</artifactId>
+<version>1.0.0</version>
 </dependency>
 ```
 
@@ -110,8 +119,10 @@ dependencies {
 
 ### Direct Download
 
-- [faststylus-v1.0.0.jar](https://github.com/andrestubbe/FastStylus/releases/download/v1.0.0/faststylus-v1.0.0.jar) — Main library with DLL
-- [fastcore-v1.0.0.jar](https://github.com/andrestubbe/FastCore/releases/download/v1.0.0/fastcore-1.0.0.jar) — JNI loader (required dependency)
+- [faststylus-v1.0.0.jar](https://github.com/andrestubbe/FastStylus/releases/download/v1.0.0/faststylus-v1.0.0.jar) —
+  Main library with DLL
+- [fastcore-v1.0.0.jar](https://github.com/andrestubbe/FastCore/releases/download/v1.0.0/fastcore-1.0.0.jar) — JNI
+  loader (required dependency)
 
 ```bash
 # Run with both JARs
@@ -121,37 +132,37 @@ java -cp "faststylus-v1.0.0.jar;fastcore-1.0.0.jar" YourApp
 
 ---
 
-## 🎯 API Reference
+## API Reference
 
 ### Core Methods
 
-| Method | Description | Status |
-|--------|-------------|--------|
+| Method                      | Description                  | Status    |
+|-----------------------------|------------------------------|-----------|
 | `FastStylus.create(window)` | Initialize stylus for window | ✅ Working |
-| `addListener(listener)` | Add stylus event callback | ✅ Working |
-| `start()` | Begin stylus polling | ✅ Working |
-| `stop()` | Stop stylus polling | ✅ Working |
-| `isStylusAvailable()` | Check if stylus present | ✅ Working |
-| `getMaxStylusPoints()` | Get max simultaneous pens | ✅ Working |
+| `addListener(listener)`     | Add stylus event callback    | ✅ Working |
+| `start()`                   | Begin stylus polling         | ✅ Working |
+| `stop()`                    | Stop stylus polling          | ✅ Working |
+| `isStylusAvailable()`       | Check if stylus present      | ✅ Working |
+| `getMaxStylusPoints()`      | Get max simultaneous pens    | ✅ Working |
 
 ### StylusEvent Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | int | Pointer ID (tracking) |
-| `x, y` | int | Screen coordinates |
-| `pressure` | int | 0-1024 raw pressure |
-| `pressurePercent` | int | 0-100% mapped pressure |
-| `tiltX` | int | X tilt angle (-90° to +90°) |
-| `tiltY` | int | Y tilt angle (-90° to +90°) |
-| `rotation` | int | Rotation 0-360° |
-| `width, height` | int | Contact size in pixels |
-| `state` | State | HOVER / DOWN / MOVE / UP |
-| `isEraser` | boolean | Eraser tip active |
-| `isBarrelButton1` | boolean | Barrel button 1 pressed |
-| `isBarrelButton2` | boolean | Barrel button 2 pressed |
-| `isInverted` | boolean | Pen inverted (eraser end) |
-| `timestamp` | long | Event time in ms |
+| Field             | Type    | Description                 |
+|-------------------|---------|-----------------------------|
+| `id`              | int     | Pointer ID (tracking)       |
+| `x, y`            | int     | Screen coordinates          |
+| `pressure`        | int     | 0-1024 raw pressure         |
+| `pressurePercent` | int     | 0-100% mapped pressure      |
+| `tiltX`           | int     | X tilt angle (-90° to +90°) |
+| `tiltY`           | int     | Y tilt angle (-90° to +90°) |
+| `rotation`        | int     | Rotation 0-360°             |
+| `width, height`   | int     | Contact size in pixels      |
+| `state`           | State   | HOVER / DOWN / MOVE / UP    |
+| `isEraser`        | boolean | Eraser tip active           |
+| `isBarrelButton1` | boolean | Barrel button 1 pressed     |
+| `isBarrelButton2` | boolean | Barrel button 2 pressed     |
+| `isInverted`      | boolean | Pen inverted (eraser end)   |
+| `timestamp`       | long    | Event time in ms            |
 
 ---
 
@@ -196,20 +207,24 @@ faststylus/
 
 ### ✅ Tested Devices
 
-| Device | Pen | Pressure | Tilt | Eraser | Barrel | Status |
-|--------|-----|----------|------|--------|--------|--------|
-| Surface Pro 8 | **Wacom Bamboo Ink Plus** | ✅ 0-1024 | ✅ ±90° | ✅ | ✅ 2 buttons | ✅ **Verified Apr 2026** |
+| Device        | Pen                       | Pressure | Tilt   | Eraser | Barrel      | Status                  |
+|---------------|---------------------------|----------|--------|--------|-------------|-------------------------|
+| Surface Pro 8 | **Wacom Bamboo Ink Plus** | ✅ 0-1024 | ✅ ±90° | ✅      | ✅ 2 buttons | ✅ **Verified Apr 2026** |
 
-> **We need your help!** If you test FastStylus with your device, please [open an issue](https://github.com/andrestubbe/FastStylus/issues) with your results and we'll add it to the compatibility list.
+> **We need your help!** If you test FastStylus with your device,
+> please [open an issue](https://github.com/andrestubbe/FastStylus/issues) with your results and we'll add it to the
+> compatibility list.
 
 ### 🙋 Call for Volunteers
 
 FastStylus needs testing on more hardware! If you have:
+
 - A Windows tablet/laptop with stylus support
 - Any active pen (Wacom, Surface, HP, Dell, Lenovo, etc.)
 - 5 minutes to run the demo
 
 Please test and report:
+
 1. Does pressure work? (0-100% in HUD)
 2. Does tilt work? (X/Y degrees when angling pen)
 3. Does eraser work? (flip pen, HUD shows "ERASER")
@@ -220,11 +235,13 @@ Please test and report:
 ---
 
 ## License
+
 MIT License — See [LICENSE](LICENSE) file for details.
 
 ---
 
 ## Related Projects
+
 - [FastCore](https://github.com/andrestubbe/FastCore) — Native Library Loader for Java
 - [FastKeyboard](https://github.com/andrestubbe/FastKeyboard) — High-performance RawInput engine
 - [FastTheme](https://github.com/andrestubbe/FastTheme) — Advanced UI styling engine
