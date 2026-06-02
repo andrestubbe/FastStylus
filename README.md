@@ -170,7 +170,7 @@ dependencies {
 
 ## Build from Source
 
-See [COMPILE.md](COMPILE.md) for detailed build instructions.
+See [COMPILE.md](docs/COMPILE.md) for detailed build instructions.
 
 ---
 
