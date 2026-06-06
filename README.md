@@ -1,6 +1,6 @@
-﻿# FastStylus v0.1.0 [ALPHA] — Native Stylus/Pen Input for Java
+﻿# FastStylus 0.1.0 [ALPHA] — Native Stylus/Pen Input for Java
 
-[![Status](https://img.shields.io/badge/status-v0.1.0-brightgreen.svg)](https://github.com/andrestubbe/FastStylus/releases/tag/v0.1.0)
+[![Status](https://img.shields.io/badge/status-0.1.0-brightgreen.svg)](https://github.com/andrestubbe/FastStylus/releases/tag/0.1.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Java](https://img.shields.io/badge/Java-17+-blue.svg)](https://www.java.com)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010+-lightgrey.svg)]()
@@ -100,12 +100,12 @@ public class Example {
   <dependency>
     <groupId>com.github.andrestubbe</groupId>
     <artifactId>faststylus</artifactId>
-    <version>v0.1.0</version>
+    <version>0.1.0</version>
   </dependency>
   <dependency>
     <groupId>com.github.andrestubbe</groupId>
     <artifactId>fastcore</artifactId>
-    <version>v0.1.0</version>
+    <version>0.1.0</version>
   </dependency>
 </dependencies>
 
@@ -119,7 +119,7 @@ repositories {
 }
 dependencies {
     implementation 'com.github.andrestubbe:faststylus:1.0.0'
-    implementation 'com.github.andrestubbe:fastcore:v0.1.0'
+    implementation 'com.github.andrestubbe:fastcore:0.1.0'
 
 }
 ```
@@ -246,7 +246,7 @@ MIT License — See [LICENSE](LICENSE) file for details.
 - [FastCore](https://github.com/andrestubbe/FastCore) — Native Library Loader & JNI Utilities for Java
 - [FastMouse](https://github.com/andrestubbe/FastMouse) — High-Performance Native Mouse API for Java
 - [FastHotkey](https://github.com/andrestubbe/FastHotkey) — Low-Latency Global Hotkey API for Java
-- [FastKeyboard](https://github.com/andrestubbe/FastKeyboard) — Native Windows RawInput API for Java
+- [FastStylus](https://github.com/andrestubbe/FastStylus) — Native Windows RawInput API for Java
 - [FastKeylogger](https://github.com/andrestubbe/FastKeylogger) — Behavioral Typing Logic for Java
 - [FastTouch](https://github.com/andrestubbe/FastTouch) — Native touchscreen input for Java
 
