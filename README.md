@@ -1,4 +1,4 @@
-﻿# FastStylus 0.1.0 [ALPHA] — Native Stylus/Pen Input for Java
+# FastStylus 0.1.0 [ALPHA-2026-06] � Native Stylus/Pen Input for Java
 
 [![Status](https://img.shields.io/badge/status-0.1.0-brightgreen.svg)](https://github.com/andrestubbe/FastStylus/releases/tag/0.1.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -6,20 +6,20 @@
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010+-lightgrey.svg)]()
 [![JitPack](https://img.shields.io/badge/JitPack-ready-green.svg)](https://jitpack.io/#andrestubbe/FastStylus)
 
-**⚡ Ultra-fast native stylus input for Java — Pressure, tilt, eraser, and hover impossible in pure Java. Native stylus/pen input via Windows WM_POINTER API**.
+**? Ultra-fast native stylus input for Java � Pressure, tilt, eraser, and hover impossible in pure Java. Native stylus/pen input via Windows WM_POINTER API**.
 
-FastStylus provides **hardware-level stylus access** for Java applications — something impossible with standard
+FastStylus provides **hardware-level stylus access** for Java applications � something impossible with standard
 AWT/Swing. Get raw pen data including:
 
-- **Pressure sensitivity** — 0-1024 levels (0-100% mapped)
-- **Tilt X/Y** — Pen angle in degrees (-90° to +90°)
-- **Rotation/Orientation** — 0-360°
-- **Eraser detection** — Automatic eraser tip recognition
-- **Barrel buttons** — Two side button support
-- **Hover** — Proximity detection without contact
-- **Low latency** — Native Windows API, no JVM event queue delays
+- **Pressure sensitivity** � 0-1024 levels (0-100% mapped)
+- **Tilt X/Y** � Pen angle in degrees (-90� to +90�)
+- **Rotation/Orientation** � 0-360�
+- **Eraser detection** � Automatic eraser tip recognition
+- **Barrel buttons** � Two side button support
+- **Hover** � Proximity detection without contact
+- **Low latency** � Native Windows API, no JVM event queue delays
 
-**Java CANNOT do this.** AWT only provides mouse emulation for pen input. FastStylus gives you the real thing — perfect
+**Java CANNOT do this.** AWT only provides mouse emulation for pen input. FastStylus gives you the real thing � perfect
 for Surface Pro, Wacom, and other Windows Ink devices.
 
 [![FastKeyboard Showcase](docs/screenshot.png)](https://www.youtube.com/watch?v=BZsqQl7WqWk)
@@ -72,13 +72,13 @@ public class Example {
 
 | Feature          | Java AWT/Swing           | FastStylus (JNI)         |
 |------------------|--------------------------|--------------------------|
-| Pressure         | ❌ No                     | ✅ 0-1024 levels (0-100%) |
-| Tilt X/Y         | ❌ No                     | ✅ -90° to +90°           |
-| Rotation         | ❌ No                     | ✅ 0-360°                 |
-| Eraser Detection | ❌ No                     | ✅ Automatic              |
-| Barrel Buttons   | ❌ No                     | ✅ 2 buttons              |
-| Hover            | ❌ No                     | ✅ Proximity detection    |
-| Raw Pen Events   | ❌ No (synthesized mouse) | ✅ Native WM_POINTER      |
+| Pressure         | ? No                     | ? 0-1024 levels (0-100%) |
+| Tilt X/Y         | ? No                     | ? -90� to +90�           |
+| Rotation         | ? No                     | ? 0-360�                 |
+| Eraser Detection | ? No                     | ? Automatic              |
+| Barrel Buttons   | ? No                     | ? 2 buttons              |
+| Hover            | ? No                     | ? Proximity detection    |
+| Raw Pen Events   | ? No (synthesized mouse) | ? Native WM_POINTER      |
 | Latency          | High (event queue)       | **Native speed**         |
 
 ---
@@ -126,9 +126,9 @@ dependencies {
 
 ### Direct Download
 
-- [faststylus-v1.0.0.jar](https://github.com/andrestubbe/FastStylus/releases/download/v1.0.0/faststylus-v1.0.0.jar) —
+- [faststylus-v1.0.0.jar](https://github.com/andrestubbe/FastStylus/releases/download/v1.0.0/faststylus-v1.0.0.jar) �
   Main library with DLL
-- [fastcore-v1.0.0.jar](https://github.com/andrestubbe/FastCore/releases/download/v1.0.0/fastcore-1.0.0.jar) — JNI
+- [fastcore-v1.0.0.jar](https://github.com/andrestubbe/FastCore/releases/download/v1.0.0/fastcore-1.0.0.jar) � JNI
   loader (required dependency)
 
 
@@ -140,12 +140,12 @@ dependencies {
 
 | Method                      | Description                  | Status    |
 |-----------------------------|------------------------------|-----------|
-| `FastStylus.create(window)` | Initialize stylus for window | ✅ Working |
-| `addListener(listener)`     | Add stylus event callback    | ✅ Working |
-| `start()`                   | Begin stylus polling         | ✅ Working |
-| `stop()`                    | Stop stylus polling          | ✅ Working |
-| `isStylusAvailable()`       | Check if stylus present      | ✅ Working |
-| `getMaxStylusPoints()`      | Get max simultaneous pens    | ✅ Working |
+| `FastStylus.create(window)` | Initialize stylus for window | ? Working |
+| `addListener(listener)`     | Add stylus event callback    | ? Working |
+| `start()`                   | Begin stylus polling         | ? Working |
+| `stop()`                    | Stop stylus polling          | ? Working |
+| `isStylusAvailable()`       | Check if stylus present      | ? Working |
+| `getMaxStylusPoints()`      | Get max simultaneous pens    | ? Working |
 
 ### StylusEvent Fields
 
@@ -155,9 +155,9 @@ dependencies {
 | `x, y`            | int     | Screen coordinates          |
 | `pressure`        | int     | 0-1024 raw pressure         |
 | `pressurePercent` | int     | 0-100% mapped pressure      |
-| `tiltX`           | int     | X tilt angle (-90° to +90°) |
-| `tiltY`           | int     | Y tilt angle (-90° to +90°) |
-| `rotation`        | int     | Rotation 0-360°             |
+| `tiltX`           | int     | X tilt angle (-90� to +90�) |
+| `tiltY`           | int     | Y tilt angle (-90� to +90�) |
+| `rotation`        | int     | Rotation 0-360�             |
 | `width, height`   | int     | Contact size in pixels      |
 | `state`           | State   | HOVER / DOWN / MOVE / UP    |
 | `isEraser`        | boolean | Eraser tip active           |
@@ -174,9 +174,9 @@ See [COMPILE.md](docs/COMPILE.md) for detailed build instructions.
 
 ---
 
-## 📄 License
+## ?? License
 
-MIT License — See [LICENSE](LICENSE) for details.
+MIT License � See [LICENSE](LICENSE) for details.
 
 ---
 
@@ -184,40 +184,40 @@ MIT License — See [LICENSE](LICENSE) for details.
 
 ```
 faststylus/
-├── .github/workflows/          # CI/CD
-├── examples/00-basic-usage/   # Demo project
-│   ├── pom.xml
-│   └── src/main/java/faststylus/StylusDemo.java
-├── native/
-│   ├── FastStylus.cpp         # Native implementation
-│   └── FastStylus.def         # JNI exports (REQUIRED)
-├── src/main/java/faststylus/  # Library source
-│   └── FastStylus.java
-├── compile.bat                # Native build script
-├── pom.xml                    # Maven config
-└── README.md                  # This file
++-- .github/workflows/          # CI/CD
++-- examples/00-basic-usage/   # Demo project
+�   +-- pom.xml
+�   +-- src/main/java/faststylus/StylusDemo.java
++-- native/
+�   +-- FastStylus.cpp         # Native implementation
+�   +-- FastStylus.def         # JNI exports (REQUIRED)
++-- src/main/java/faststylus/  # Library source
+�   +-- FastStylus.java
++-- compile.bat                # Native build script
++-- pom.xml                    # Maven config
++-- README.md                  # This file
 ```
 
 ---
 
-## 🖊️ Compatible Devices
+## ??? Compatible Devices
 
 - **Microsoft Surface** Pro 8/9, Studio, Go, Laptop (with Surface Pen)
 - **Wacom** Penabled, AES, and EMR devices
 - **Windows Ink** compatible pens
 - **HP, Dell, Lenovo** 2-in-1 devices with active pens
 
-### ✅ Tested Devices
+### ? Tested Devices
 
 | Device        | Pen                       | Pressure | Tilt   | Eraser | Barrel      | Status                  |
 |---------------|---------------------------|----------|--------|--------|-------------|-------------------------|
-| Surface Pro 8 | **Wacom Bamboo Ink Plus** | ✅ 0-1024 | ✅ ±90° | ✅      | ✅ 2 buttons | ✅ **Verified Apr 2026** |
+| Surface Pro 8 | **Wacom Bamboo Ink Plus** | ? 0-1024 | ? �90� | ?      | ? 2 buttons | ? **Verified Apr 2026** |
 
 > **We need your help!** If you test FastStylus with your device,
 > please [open an issue](https://github.com/andrestubbe/FastStylus/issues) with your results and we'll add it to the
 > compatibility list.
 
-### 🙋 Call for Volunteers
+### ?? Call for Volunteers
 
 FastStylus needs testing on more hardware! If you have:
 
@@ -232,26 +232,26 @@ Please test and report:
 3. Does eraser work? (flip pen, HUD shows "ERASER")
 4. Do barrel buttons work? (HUD shows "BTN1/BTN2")
 
-[Submit your test results →](https://github.com/andrestubbe/FastStylus/issues/new)
+[Submit your test results ?](https://github.com/andrestubbe/FastStylus/issues/new)
 
 ---
 
 ## License
 
-MIT License — See [LICENSE](LICENSE) file for details.
+MIT License � See [LICENSE](LICENSE) file for details.
 
 ---
 
 ## Related Projects
-- [FastCore](https://github.com/andrestubbe/FastCore) — Native Library Loader & JNI Utilities for Java
-- [FastMouse](https://github.com/andrestubbe/FastMouse) — High-Performance Native Mouse API for Java
-- [FastHotkey](https://github.com/andrestubbe/FastHotkey) — Low-Latency Global Hotkey API for Java
-- [FastStylus](https://github.com/andrestubbe/FastStylus) — Native Windows RawInput API for Java
-- [FastKeylogger](https://github.com/andrestubbe/FastKeylogger) — Behavioral Typing Logic for Java
-- [FastTouch](https://github.com/andrestubbe/FastTouch) — Native touchscreen input for Java
+- [FastCore](https://github.com/andrestubbe/FastCore) � Native Library Loader & JNI Utilities for Java
+- [FastMouse](https://github.com/andrestubbe/FastMouse) � High-Performance Native Mouse API for Java
+- [FastHotkey](https://github.com/andrestubbe/FastHotkey) � Low-Latency Global Hotkey API for Java
+- [FastStylus](https://github.com/andrestubbe/FastStylus) � Native Windows RawInput API for Java
+- [FastKeylogger](https://github.com/andrestubbe/FastKeylogger) � Behavioral Typing Logic for Java
+- [FastTouch](https://github.com/andrestubbe/FastTouch) � Native touchscreen input for Java
 
 ---
-**Part of the FastJava Ecosystem** — *Making the JVM faster.*
+**Part of the FastJava Ecosystem** � *Making the JVM faster.*
 
 
 
