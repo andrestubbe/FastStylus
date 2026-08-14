@@ -26,13 +26,6 @@ for Surface Pro, Wacom, and other Windows Ink devices.
 
 ---
 
-## Table of Contents
-
-- [TODO](#features)
-
----
-
-
 ## Quick Start
 
 ```java
@@ -67,6 +60,16 @@ public class Example {
 ```
 
 ---
+
+---
+
+## Table of Contents
+
+- [TODO](#features)
+
+---
+
+
 
 ## Why FastStylus?
 
