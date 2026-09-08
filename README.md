@@ -22,7 +22,7 @@ AWT/Swing. Get raw pen data including:
 **Java CANNOT do this.** AWT only provides mouse emulation for pen input. FastStylus gives you the real thing — perfect
 for Surface Pro, Wacom, and other Windows Ink devices.
 
-[![FastKeyboard Showcase](docs/screenshot.png)](https://www.youtube.com/watch?v=BZsqQl7WqWk)
+Watch Demo (YouTube) | Watch JMH Benchmark (YouTube)
 
 ---
 
