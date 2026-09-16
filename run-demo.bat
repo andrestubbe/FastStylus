@@ -23,7 +23,7 @@ if %ERRORLEVEL% NEQ 0 (
 
 echo [3/3] Running Demo...
 set /p CP=<cp.txt
-java --enable-native-access=ALL-UNNAMED "-Djava.library.path=%~dp0build" -cp "target\classes;%CP%" faststylus.StylusDemo
+java --enable-native-access=ALL-UNNAMED "-Djava.library.path=%~dp0build" -cp "target\classes;%CP%" faststylus.Demo
 
 cd ..\..
 pause

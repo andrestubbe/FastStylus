@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * FastStylus Demo - Pressure-sensitive drawing with tilt visualization
  */
-public class StylusDemo {
+public class Demo {
     
     private static final Map<Integer, Color> stylusColors = new HashMap<>();
     private static BufferedImage canvas;

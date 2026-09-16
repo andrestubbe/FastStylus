@@ -136,7 +136,7 @@ FastStylus is measured using **JMH (Java Microbenchmark Harness)** to ensure zer
 
 | Case | Java Example | Launcher | Description |
 |---|---|---|---|
-| **Interactive Pen HUD & Canvas** | [StylusDemo.java](examples/Demo/src/main/java/faststylus/StylusDemo.java) | `run-demo.bat` | Real-time drawing canvas with pressure-width scaling, tilt circle HUD, and eraser mode. |
+| **Interactive Pen HUD & Canvas** | [Demo.java](examples/Demo/src/main/java/faststylus/Demo.java) | `run-demo.bat` | Real-time drawing canvas with pressure-width scaling, tilt circle HUD, and eraser mode. |
 | **JMH Microbenchmark Suite** | [Benchmark.java](examples/Benchmark/src/main/java/faststylus/benchmark/Benchmark.java) | `run-benchmark.bat` | Microbenchmark suite profiling stylus event allocation and formatting throughput. |
 
 ---
