@@ -1,29 +1,26 @@
-# The Philosophy of FastXXX
+# The Philosophy of FastStylus
 
 > [!IMPORTANT]
-> **"Keine Kopien. Niemals. Kritischer JNI-Pfad. Native-First Performance."**
+> **"Zero copies. Never. Critical JNI paths. Native-First Performance."**
 
-FastXXX is built on the principle that modern Java applications require **native-first** acceleration for performance-critical operations that the standard JVM APIs don't fully optimize.
+FastStylus is built on the principle that modern Java applications require **native-first** acceleration for digitizer and pen hardware operations that standard JVM APIs (AWT/Swing) reduce to generic mouse cursor emulation.
 
 ## Core Tenets
 
-1.  **Native-First Execution**
-    Bypass standard Java layers to reach the physical limits of the hardware using hand-tuned C++ and SIMD intrinsics.
+1.  **Hardware-Native Pen Interception**
+    Bypass synthetic mouse emulation to directly query physical stylus attributes—such as raw pressure levels (0-1024), dual-axis tilt (-90° to +90°), rotation, and invert/eraser state—straight from the Windows digitizer pipeline (`WM_POINTER`).
 
-2.  **Zero-Copy JNI Architecture**
-    Minimize JNI transition costs by using direct memory access patterns and avoiding implicit memory copies between the JVM and the native layer.
+2.  **Zero-Allocation JNI Pipeline**
+    Transmit packed stylus event structs without creating intermediate Java objects or generating garbage collection churn during high-frequency pen strokes.
 
-3.  **Deterministic Latency**
-    Eliminate variance caused by JIT warm-up or garbage collection stalls in critical hot-paths.
+3.  **Real-Time Tactile Feedback**
+    Eliminate the Event Dispatch Thread (EDT) latency lag, delivering sub-millisecond pen tracking essential for responsive drawing, digital ink, and interactive canvas tools.
 
-4.  **Hardware-Aware Optimization**
-    Leverage modern CPU features (AVX, SSE, NEON) to process data at hardware-native speeds.
-
-5.  **Blueprint Consistency**
-    As part of the **FastJava** ecosystem, FastXXX adheres to a standardized architecture:
-    *   **Native Backend**: Direct C++ implementation.
+4.  **Blueprint Consistency**
+    As part of the **FastJava** ecosystem, FastStylus adheres to a standardized architecture:
+    *   **Native Backend**: Direct Win32 pointer and digitizer implementation (`WM_POINTER`).
     *   **Unified Loading**: Powered by `FastCore`.
-    *   **Premium Quality**: Built for high-performance systems and autonomous agents.
+    *   **Autonomous & Interactive Ready**: Engineered for responsive UI overlays, artistic canvas software, and telemetry recording.
 
 ---
-**⚡ FastXXX — Powering the next generation of Native Java.**
+**⚡ FastStylus — Powering the next generation of Native Java.**

@@ -37,7 +37,7 @@ The `compile.bat` script:
 ## Running Examples
 
 ```bash
-cd examples/00-basic-usage
+cd examples/Demo
 mvn compile exec:java
 ```
 
