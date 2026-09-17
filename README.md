@@ -48,7 +48,7 @@ public class Demo {
 ## Table of Contents
 
 - [Quick Start](#quick-start)
-- [Why FastTouch?](#why-fasttouch)
+- [Why FastStylus?](#why-faststylus)
 - [Key Features](#key-features)
 - [Real-World Use Cases](#real-world-use-cases)
 - [Performance Benchmarks](#performance-benchmarks)
@@ -66,15 +66,26 @@ public class Demo {
 
 Standard Java input subsystems (AWT `MouseListener`, JavaFX, Swing) treat digitizers and pens as generic single-cursor mouse emulations:
 
-- **Single-Cursor Emulation**: Standard AWT discards pen pressure, tilt angles, and barrel button modifiers.
-- **Missing Sensor Geometry**: Physical force levels (`0..1024`), dual-axis tilt (`-90°..+90°`), and barrel rotation (`0..360°`) are completely lost in pure Java.
-- **Event Queue Delays**: Synthesized mouse events pass through the Event Dispatch Thread (EDT), creating noticeable stroke lag during drawing or handwriting.
+1. **Single-Cursor Emulation**: Standard AWT discards pen pressure, tilt angles, and barrel button modifiers, treating active digitizers as blunt mice.
+2. **Missing Sensor Geometry**: Physical force levels (`0..1024`), dual-axis tilt (`-90°..+90°`), and barrel rotation (`0..360°`) are completely lost in pure Java.
+3. **Event Queue Delays**: Synthesized mouse events pass through the Event Dispatch Thread (EDT), creating noticeable stroke lag during drawing or handwriting.
+4. **Legacy Driver Lock-In**: Alternative solutions rely on deprecated 1990s Wintab 32-bit DLLs that fail on modern Windows Ink devices and Microsoft Surface hardware.
 
-**FastStylus** bridges directly to the Win32 `WM_POINTER` digitizer subsystem:
+**FastStylus** bridges directly to the modern Win32 `WM_POINTER` digitizer subsystem:
 
 - **Hardware Pressure & Tilt**: Full 0–1024 raw pressure levels (mapped to 0–100%) and continuous dual-axis tilt tracking.
 - **Eraser & Invert Sensing**: Automatic detection when the stylus is physically flipped to the eraser end.
 - **Sub-Millisecond Event Loop**: Direct window subclassing captures digitizer messages before JVM event queue scheduling.
+- **Universal Hardware Support**: Native out-of-the-box support for Windows Ink, Microsoft Surface, and Wacom AES/EMR digitizers.
+
+| Feature | Java AWT / Swing | Legacy Wintab Wrappers | FastStylus |
+|:---|:---|:---|:---|
+| **Input Subsystem** | Synthesized `WM_MOUSEMOVE` | Legacy Wintab DLL (Wacom only) | Native Win32 `WM_POINTER` |
+| **Pressure Tracking** | ❌ Binary click only (0/1) | ⚠️ Driver-dependent | ✅ 10-bit raw resolution (0–1024) |
+| **Tilt & Rotation** | ❌ Discarded | ⚠️ Inconsistent support | ✅ Dual-axis (±90°) + 360° rotation |
+| **Eraser / Invert Detection** | ❌ None | ⚠️ Unreliable | ✅ Native hardware tip inversion |
+| **Event Dispatch Latency** | 15–30 ms (EDT queue lag) | 5–15 ms | < 0.1 ms (Direct window subclassing) |
+| **Device Compatibility** | Generic mouse fallback | Wacom desktop tablets only | Surface, Windows Ink, Wacom AES/EMR |
 
 ---
 
